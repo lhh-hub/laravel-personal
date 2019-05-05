@@ -30,10 +30,29 @@
 //    });
 //});
 
+/*
 $api = app('Dingo\Api\Routing\Router');
 
-//$api->get('index/{id}', 'App\Http\Controllers\IndexController@index');
-$api->version('v1', function ($api) {
 
-    $api->post('login', 'App\Http\Controllers\Api\AuthController@login');
+$api->version('v1', function ($api) {
+        $api->group(["namespace" => "App\Http\Controllers\Api" ], function ($api) {
+            $api->post('register', 'AuthController@register')->name('register');
+            $api->post('login', 'AuthController@login')->name('login');
+        });
+        $api->group(["namespace" => "App\Http\Controllers\Api",'middleware' => 'auth:api' ], function ($api) {
+            $api->post('test', 'UserController@index');
+            $api->post('logout', 'AuthController@logout')->name('logout');
+        });
+});*/
+$api = app('Dingo\Api\Routing\Router');
+
+$api->version('v1', function ($api) {
+    $api->group(["namespace" => "App\Http\Controllers\Api" ], function ($api) {
+        $api->get('/user/login','JwtLoginController@login');
+        $api->group([ 'middleware' => 'jwt_auth' ], function ($api) {
+            $api->get('user/info','UserController@info');
+        });
+
+    });
 });
+

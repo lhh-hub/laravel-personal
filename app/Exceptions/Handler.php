@@ -2,11 +2,14 @@
 
 namespace App\Exceptions;
 
+use App\Common\Err\ApiErrDesc;
+use App\Http\Response\ResponseJson;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
+    use ResponseJson;
     /**
      * A list of the exception types that are not reported.
      *
@@ -46,6 +49,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        //return parent::render($request, $exception);
+        if($exception instanceof ApiException){
+            $code = $exception->getCode();
+            $message = $exception->getMessage();
+        }else{
+            $code = $exception->getCode();
+            if(!$code || $code <0) {
+                $code = ApiErrDesc::UNKONWN_ERR[0];
+            }
+            $message = $exception->getMessage() ? : ApiErrDesc::UNKONWN_ERR[1];
+        }
+        return $this->jsonData($code,$message);
     }
+
+
 }
