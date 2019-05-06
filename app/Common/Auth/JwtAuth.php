@@ -77,10 +77,11 @@ class JwtAuth
             ->setIssuer($this->iss)
             ->setAudience($this->aud)
             ->setIssuedAt($time)
-            ->setExpiration($time + 3600)
+            ->setExpiration($time + 60)
             ->set('uid', $this->uid)
             ->sign(new Sha256(), $this->secret)
             ->getToken();
+        //TODO 存储token 和有效期
         return $this;
     }
 
@@ -125,7 +126,6 @@ class JwtAuth
                 throw new ApiException(ApiErrDesc::ERR_TOKEN_VALUE);
             }
         }
-
         return $this->decodeToken;
     }
 
@@ -135,7 +135,6 @@ class JwtAuth
      */
     public function validate()
     {
-
         $data = new ValidationData();
         $data->setIssuer($this->iss);
         $data->setAudience($this->aud);
